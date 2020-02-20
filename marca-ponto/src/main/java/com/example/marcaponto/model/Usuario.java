@@ -30,7 +30,6 @@ public class Usuario {
         this.dataCadastro = dataCadastro;
     }
 
-
     public long getId() {
         return id;
     }

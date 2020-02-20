@@ -5,28 +5,26 @@ import com.example.marcaponto.exception.ResourceNotFoundException;
 import com.example.marcaponto.model.Usuario;
 import com.example.marcaponto.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @GetMapping("/usuarios")
+    @GetMapping
     public List<Usuario> getAllUsuarios(){
         return usuarioRepository.findAll();
     }
 
-    @GetMapping("/usuarios/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity< Usuario > getUsuarioById(@PathVariable(value = "id") Long usuarioId)
             throws ResourceNotFoundException {
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -34,7 +32,8 @@ public class UsuarioController {
         return ResponseEntity.ok().body(usuario);
     }
 
-    @PostMapping("/usuarios")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Usuario createUsuario(@Valid @RequestBody Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
@@ -48,19 +47,8 @@ public class UsuarioController {
         usuario.setNomeCompleto(usuarioDetails.getNomeCompleto());
         usuario.setCpf(usuarioDetails.getCpf());
         usuario.setEmail(usuarioDetails.getEmail());
+
         final Usuario updatedUsuario = usuarioRepository.save(usuario);
         return ResponseEntity.ok(updatedUsuario);
-    }
-
-    @DeleteMapping("/usuarios/{id}")
-    public Map< String, Boolean > deleteEmployee(@PathVariable(value = "id") Long usuarioId)
-            throws ResourceNotFoundException {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario nao encontrado para esse id :: " + usuarioId));
-
-        usuarioRepository.delete(usuario);
-        Map < String, Boolean > response = new HashMap< >();
-        response.put("deleted", Boolean.TRUE);
-        return response;
     }
 }
